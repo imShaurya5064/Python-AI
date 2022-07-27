@@ -1,0 +1,83 @@
+import pyttsx3 #needs to be installed by pip
+import speech_recognition as sr #needs to be installed by pip
+import smtplib
+import webbrowser
+import datetime
+import os 
+import wikipedia #needs to be installed by pip
+
+print("Initializing <GumBot>...")
+
+#engine
+engine = pyttsx3.init('sapi5')
+voices = engine.getProperty('voices')
+engine.setProperty('voices', voices[0].id)
+MASTER ="Shaurya"
+
+#speak function will pronounce the string
+def speak(text):
+    engine.say(text)
+    engine.runAndWait()
+
+#wishes you
+def wishMe():
+    hour = int(datetime.datetime.now().hour)
+    print(hour)
+    if hour>=0 and hour<12:
+        speak("Good Morning" + MASTER)
+    
+    elif hour>=12 and hour<16:
+        speak("Good Afternoon"+ MASTER)
+
+    else:
+        speak("Good Evening" + MASTER)    
+
+#takes command (not working)
+def takeCommand():
+ r = sr.Recognizer()
+ with sr.Microphone() as source:
+    print("Listening...")
+    r.pause_threshold = 1
+    audio = r.listen(source)
+    try:
+        print("Recognizing...")
+        query = r.recognize_google(audio, language='en-in')
+        print(f"You said : {query}\n")
+    except Exception as e:
+        print("Sorry could not recognize what you said")            
+        query = None
+    return query
+
+
+speak("Initializing <GumBot>")
+wishMe()
+query = takeCommand()
+
+#logic for executing tasks
+if 'wikipedia' in query.lower():
+    speak("Searching Wikipedia....")
+    query = query.replace("wikipedia", "")
+    results = wikipedia.summary(query, sentences=2)
+    print(results)
+    speak(results)
+
+#open websites
+elif 'open youtube' in query.lower():
+    webbrowser.open('youtube.com')
+
+elif 'open github' in query.lower():
+    webbrowser.open('github.com')
+
+elif 'open scratch' in query.lower():
+    webbrowser.open('scratch.mit.edu')
+
+elif 'open google' in query.lower():
+    webbrowser.open('google.com')
+
+elif 'the time' in query.lower():
+    strTime = datetime.datetime.now().strftime("%H%M")
+    speak(f"{MASTER} the time is {strTime}")
+    print(strTime)
+
+elif 'you are good' in query.lower():
+    speak("Thanks!")
